@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from './components/Header';
 import ActionGrid from './components/ActionGrid';
@@ -21,20 +22,16 @@ import { AppProvider, useAppContext } from './context/AppContext';
 const MainApp: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [authView, setAuthView] = useState<AuthView>('LOGIN'); // State to switch between login/register
+  const [authView, setAuthView] = useState<AuthView>('LOGIN');
   
   const { recentTransactions, isLoggedIn } = useAppContext();
 
-  // AUTHENTICATION FLOW
   if (!isLoggedIn) {
-      if (authView === 'LOGIN') {
-          return <LoginScreen onGoToRegister={() => setAuthView('REGISTER')} />;
-      } else {
-          return <RegistrationScreen onGoToLogin={() => setAuthView('LOGIN')} />;
-      }
+      return authView === 'LOGIN' 
+        ? <LoginScreen onGoToRegister={() => setAuthView('REGISTER')} /> 
+        : <RegistrationScreen onGoToLogin={() => setAuthView('LOGIN')} />;
   }
 
-  // MAIN APP FLOW
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setCurrentView('SHOP_CHECKOUT');
@@ -42,35 +39,22 @@ const MainApp: React.FC = () => {
 
   const renderContent = () => {
     switch (currentView) {
-      case 'ADMIN':
-        return <AdminPanel onBack={() => setCurrentView('HOME')} />;
-      case 'RECHARGE':
-        return <RechargeScreen onBack={() => setCurrentView('HOME')} />;
-      case 'OFFERS':
-        return <OffersScreen onBack={() => setCurrentView('HOME')} />;
-      case 'DEPOSIT':
-        return <DepositScreen onBack={() => setCurrentView('HOME')} />;
-      case 'PAY_BILL':
-        return <PayBillScreen onBack={() => setCurrentView('HOME')} />;
-      case 'SHOP':
-        return <ShopScreen onBack={() => setCurrentView('HOME')} onSelectProduct={handleSelectProduct} />;
-      case 'SHOP_CHECKOUT':
-        return selectedProduct ? (
-             <ShopCheckoutScreen onBack={() => setCurrentView('SHOP')} product={selectedProduct} />
-        ) : <ShopScreen onBack={() => setCurrentView('HOME')} onSelectProduct={handleSelectProduct} />;
-      case 'PROFILE':
-        return <ProfileScreen onBack={() => setCurrentView('HOME')} onNavigateToAdmin={() => setCurrentView('ADMIN')} />;
-      case 'HISTORY': // Reused for Reels
-        return <ReelsScreen onBack={() => setCurrentView('HOME')} />;
-      case 'ADS_JOB':
-        return <AdsJobScreen onBack={() => setCurrentView('HOME')} />;
+      case 'ADMIN': return <AdminPanel onBack={() => setCurrentView('HOME')} />;
+      case 'RECHARGE': return <RechargeScreen onBack={() => setCurrentView('HOME')} />;
+      case 'OFFERS': return <OffersScreen onBack={() => setCurrentView('HOME')} />;
+      case 'DEPOSIT': return <DepositScreen onBack={() => setCurrentView('HOME')} />;
+      case 'PAY_BILL': return <PayBillScreen onBack={() => setCurrentView('HOME')} />;
+      case 'SHOP': return <ShopScreen onBack={() => setCurrentView('HOME')} onSelectProduct={handleSelectProduct} />;
+      case 'SHOP_CHECKOUT': return selectedProduct ? <ShopCheckoutScreen onBack={() => setCurrentView('SHOP')} product={selectedProduct} /> : <ShopScreen onBack={() => setCurrentView('HOME')} onSelectProduct={handleSelectProduct} />;
+      case 'PROFILE': return <ProfileScreen onBack={() => setCurrentView('HOME')} onNavigateToAdmin={() => setCurrentView('ADMIN')} />;
+      case 'HISTORY': return <ReelsScreen onBack={() => setCurrentView('HOME')} />;
+      case 'ADS_JOB': return <AdsJobScreen onBack={() => setCurrentView('HOME')} />;
       default:
         return (
           <div className="pb-24 animate-fade-in">
             <Header onNavigate={setCurrentView} />
             <ActionGrid onNavigate={setCurrentView} />
             
-            {/* Banner / Ad Area */}
             <div className="px-4 mb-6">
                 <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-xl p-5 text-white flex justify-between items-center shadow-lg">
                     <div>
@@ -83,18 +67,17 @@ const MainApp: React.FC = () => {
                 </div>
             </div>
 
-            {/* Recent Transactions */}
             <div className="px-4">
                 <div className="flex justify-between items-center mb-3">
                     <h3 className="font-bold text-gray-700">সাম্প্রতিক লেনদেন</h3>
                     <button className="text-xs text-yellow-600 font-bold">সব দেখুন</button>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm p-4 space-y-4 min-h-[100px]">
+                <div className="bg-white rounded-xl shadow-sm p-4 space-y-4">
                     {recentTransactions.length === 0 ? (
                         <p className="text-gray-400 text-center text-sm py-4">কোনো লেনদেন পাওয়া যায়নি</p>
                     ) : (
                         recentTransactions.map((trx) => (
-                            <div key={trx.id} className="flex justify-between items-center border-b border-gray-50 last:border-0 pb-2 last:pb-0">
+                            <div key={trx.id} className="flex justify-between items-center border-b border-gray-50 last:border-0 pb-2">
                                  <div className="flex items-center gap-3">
                                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                          trx.type === 'deposit' ? 'bg-green-100 text-green-600' : 
@@ -127,33 +110,18 @@ const MainApp: React.FC = () => {
                     )}
                 </div>
             </div>
-
           </div>
         );
     }
   };
 
+  const hideBottomNav = ['RECHARGE', 'DEPOSIT', 'PAY_BILL', 'SHOP', 'SHOP_CHECKOUT', 'ADMIN', 'ADS_JOB', 'HISTORY'].includes(currentView);
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans max-w-md mx-auto relative shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative shadow-2xl overflow-hidden">
       {renderContent()}
-      
-      {/* Conditionally render BottomNav */}
-      {currentView !== 'RECHARGE' && 
-       currentView !== 'DEPOSIT' && 
-       currentView !== 'PAY_BILL' && 
-       currentView !== 'SHOP' && 
-       currentView !== 'SHOP_CHECKOUT' && 
-       currentView !== 'ADMIN' &&
-       currentView !== 'PROFILE' &&
-       currentView !== 'ADS_JOB' && 
-       currentView !== 'HISTORY' && ( 
-        <BottomNav currentView={currentView} onChangeView={setCurrentView} />
-      )}
-      
-      {/* Show BottomNav on Profile */}
-      {currentView === 'PROFILE' && (
-         <BottomNav currentView={currentView} onChangeView={setCurrentView} />
-      )}
+      {!hideBottomNav && <BottomNav currentView={currentView} onChangeView={setCurrentView} />}
+      {currentView === 'PROFILE' && <BottomNav currentView={currentView} onChangeView={setCurrentView} />}
     </div>
   );
 };
