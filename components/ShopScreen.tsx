@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
@@ -13,7 +14,6 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack, onSelectProduct }) => {
 
   return (
     <div className="pb-24 min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white p-4 flex items-center gap-4 sticky top-0 z-10 shadow-sm">
         <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full">
           <ArrowLeft size={24} className="text-gray-700" />
@@ -23,22 +23,23 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ onBack, onSelectProduct }) => {
 
       <div className="p-4 grid grid-cols-2 gap-4">
         {products.map(product => (
-            <div key={product.id} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
-                <div className="h-32 bg-gray-200 relative">
+            <div key={product.id} className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-gray-100 hover:shadow-md transition-shadow">
+                <div className="h-40 bg-gray-100 relative overflow-hidden">
                     <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        loading="lazy"
                     />
                 </div>
                 <div className="p-3 flex flex-col flex-1">
-                    <h3 className="font-bold text-sm text-gray-800 line-clamp-2 mb-1">{product.title}</h3>
+                    <h3 className="font-bold text-sm text-gray-800 line-clamp-2 mb-1 h-10">{product.title}</h3>
                     {product.description && <p className="text-xs text-gray-500 mb-2 line-clamp-1">{product.description}</p>}
                     <div className="mt-auto pt-2 flex justify-between items-center">
                         <span className="font-bold text-yellow-600">৳{product.price}</span>
                         <button 
                             onClick={() => onSelectProduct(product)}
-                            className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600"
+                            className="bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition-colors"
                         >
                             <ShoppingBag size={16} />
                         </button>
